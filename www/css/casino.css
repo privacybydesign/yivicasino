@@ -1,0 +1,7 @@
+
+.modal-body iframe {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    aspect-ratio: 16/9; /* Maintain a standard aspect ratio for videos */
+}

@@ -1,0 +1,36 @@
+services:
+  php:
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    depends_on:
+      - irma
+    environment:
+      - IRMA_SERVER_URL=http://irma:8088
+      - ROOT_DIR=/app/data/
+      - IRMA_SERVER_PUBLICKEY=/app/data/demo-publickey.pem
+      # - IRMA_SERVER_API_TOKEN=mysecrettoken
+      - IRMATUBE_CREDENTIAL_ID=irma-demo.IRMATube.member
+    volumes:
+    - ./data:/data
+
+      
+  irma:
+    build: https://github.com/privacybydesign/irmago.git
+    ports:
+    - "8088:8088" 
+    command: server --no-tls --no-auth --jwt-privkey-file /data/demo-privkey.pem   # add --url http://your--network-ip:8088 if your irma mobile app cannot talk to your localhost
+    networks:
+      - app-network
+    volumes:
+      - ./data:/data
+
+
+    
+networks:
+  app-network:
+    driver: bridge
+
+

@@ -1,0 +1,17 @@
+{
+    "name": "privacybydesign/yivicasino",
+    "description": "Online casino demo showing age verification using IRMA attributes",
+    "type": "project",
+    "require": {
+        "firebase/php-jwt": "6.11.0",
+        "ext-json": "*",
+        "ext-ctype": "*"
+    },
+    "license": "Apache",
+    "authors": [
+        {
+            "name": "Privacy by Design Foundation",
+            "email": "support@yivi.app"
+        }
+    ]
+}
