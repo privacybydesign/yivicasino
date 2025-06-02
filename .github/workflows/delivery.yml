@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [synchronize, opened, reopened]
   push:
-    branches: [master]
+    branches: [main]
   release:
     # Note: a current limitation is that when a release is edited after publication, then the Docker tags are not automatically updated.
     types: [published]
