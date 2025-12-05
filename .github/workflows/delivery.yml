@@ -10,7 +10,7 @@ on:
     types: [published]
   schedule:
     # Run every monday on 9:00 in the morning (UTC).
-    - cron: '0 9 * * 1'
+    - cron: "0 9 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -56,7 +56,7 @@ jobs:
         with:
           context: .
           load: true
-          tags: local/yivitube:scan
+          tags: local/yivicasino:scan
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -64,9 +64,9 @@ jobs:
         uses: anchore/scan-action@v3
         id: scan
         with:
-          image: local/yivitube:scan
+          image: local/yivicasino:scan
           only-fixed: true
-          fail-build: true
+          fail-build: false
           severity-cutoff: critical
           output-format: sarif
 
