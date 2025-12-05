@@ -26,12 +26,9 @@ function start_session($sessionrequest) {
 function start_verification_session() {
     $age = 18;
     $attrs[] = [
-        ["pbdf.pbdf.ageLimits.over" . $age],
+        ["pbdf.pbdf.passport.over" . $age ],
         ["pbdf.nijmegen.ageLimits.over" . $age ],
         ["pbdf.gemeente.personalData.over" . $age ],
-        ["pbdf.pilot-amsterdam.idcard.over" . $age ],
-        ["pbdf.pilot-amsterdam.passport.over" . $age ],
-        ["irma-demo.nijmegen.ageLimits.over" . $age ],
         ["irma-demo.gemeente.personalData.over" . $age ],
     ];
     return start_session([
