@@ -47,19 +47,17 @@ function isMember($disclosed) {
 function isAgeAllowed($disclosed) {
     $age_restriction = 18;
 
-    $age_key_pbdf = "pbdf.pbdf.ageLimits.over" . $age_restriction;
+    $age_key_passport = "pbdf.pbdf.passport.over" . $age_restriction;
     $age_key_nijmegen = "pbdf.nijmegen.ageLimits.over" . $age_restriction;
     $age_key_gemeente = "pbdf.gemeente.personalData.over" . $age_restriction;
-    $age_key_idcard = "pbdf.pilot-amsterdam.idcard.over" . $age_restriction;
-    $age_key_passport = "pbdf.pilot-amsterdam.passport.over" . $age_restriction;
+    $age_key_demo_gemeente = "irma-demo.gemeente.personalData.over" . $age_restriction;
 
     foreach ($disclosed as $con) {
         foreach ($con as $attr) {
-            if ($attr->id == $age_key_pbdf
+            if ($attr->id == $age_key_passport
                 || $attr->id == $age_key_nijmegen
                 || $attr->id == $age_key_gemeente
-                || $attr->id == $age_key_idcard
-                || $attr->id == $age_key_passport
+                || $attr->id == $age_key_demo_gemeente
             ) {
                 return strtolower($attr->rawvalue) == "yes" || strtolower($attr->rawvalue) == "ja";
             }
