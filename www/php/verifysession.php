@@ -31,23 +31,12 @@ try {
 }
 $disclosed = (array) $decoded->disclosed;
 
-function isMember($disclosed) {
-    $member_key = IRMATUBE_CREDENTIAL_ID . ".type";
-    foreach ($disclosed as $con) {
-        foreach ($con as $attr) {
-            if ($attr->id == $member_key) {
-                return $attr->rawvalue === "regular" || $attr->rawvalue === "premium";
-            }
-        }
-    }
-
-    return false;
-}
-
 function isAgeAllowed($disclosed) {
     $age_restriction = 18;
 
     $age_key_passport = "pbdf.pbdf.passport.over" . $age_restriction;
+    $age_key_idcard = "pbdf.pbdf.idcard.over" . $age_restriction;
+    $age_key_drivinglicence = "pbdf.pbdf.drivinglicence.over" . $age_restriction;
     $age_key_nijmegen = "pbdf.nijmegen.ageLimits.over" . $age_restriction;
     $age_key_gemeente = "pbdf.gemeente.personalData.over" . $age_restriction;
     $age_key_demo_gemeente = "irma-demo.gemeente.personalData.over" . $age_restriction;
@@ -56,6 +45,8 @@ function isAgeAllowed($disclosed) {
         foreach ($con as $attr) {
             if ($attr->id == $age_key_passport
                 || $attr->id == $age_key_nijmegen
+                || $attr->id == $age_key_idcard
+                || $attr->id == $age_key_drivinglicence
                 || $attr->id == $age_key_gemeente
                 || $attr->id == $age_key_demo_gemeente
             ) {

@@ -98,17 +98,17 @@
 <body style="background-image: url('img/bg.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
   <div id="enterModal" class="modal fade" tabindex="-1" role="dialog"
     aria-labelledby="enterModalLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header" style="margin: auto;text-align: center;">
-          <h4 id="enterModalLabel"> ! Welcome to the Yivi Casino ! </h4>
+          <h4 id="enterModalLabel"> ! Welcome to Yivi Casino ! </h4>
         </div>
         <div class="modal-body" style="text-align: center;">
           Click on the button below, open the Yivi app, scan the QR code using Yivi and verify your age to enter the casino!
         </div>
         <div class="modal-footer" style="margin: auto;text-align: center;">
           <button class="btn" aria-hidden="true" id="enterCasinoBtn" onclick="enterCasino()">
-            <img src="img/enter-btn.png" alt="Enter Casino" width="400" height="100" />
+            <img src="img/enter-btn.png" alt="Enter Casino" style="max-width: 100%;" />
           </button>
         </div>
       </div>
@@ -116,39 +116,26 @@
   </div>
   <div id="slotMachineModal" class="modal fade" tabindex="-1" role="dialog"
     aria-labelledby="slotMachineModalLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header" style="margin: auto;text-align: center;">
-          <h4 id="slotMachineModalLabel"> ! Thanks for playing at Yivi Casino ! </h4>
+          <h4 id="slotMachineModalLabel"> ! Welcome to Yivi Casino ! </h4>
         </div>
-        <div class="modal-body" style="text-align: center;">
-          <div id="slotmachine">
-            <div class="window-border">
-                <div class="window">
-                    <div class="outer-spacer"></div>
-                    <div class="outer-col">
-                        <div class="col"></div>
-                    </div>
-                    <div class="outer-spacer"></div>
-                    <div class="outer-col">
-                        <div class="col"></div>
-                    </div>
-                    <div class="outer-spacer"></div>
-                    <div class="outer-col">
-                        <div class="col"></div>
-                    </div>
-                    <div class="outer-spacer"></div>
-                    <div class="outer-col">
-                        <div class="col"></div>
-                    </div>
-                    <div class="outer-spacer"></div>
-                    <div class="outer-col">
-                        <div class="col"></div>
-                    </div>
-                    <div class="outer-spacer"></div>
-                </div>
-            </div>
-            <input type="button" onclick="spin(this)" class="start-button" value="Spin"/>
+        <div id="slotmachine-wrapper" class="modal-body" style="text-align: center;">
+          <iframe id="myIframe" src="https://danziger.github.io/slotjs/" frameborder="0" height="100%" width="100%">
+          </iframe>
+          <script type="text/javascript">
+            const iframe = document.getElementById('myIframe');
+            const css = `
+            #instructionsModal {
+              display: none;
+            }`;
+
+            const style = document.createElement('style');
+            style.textContent = css;
+
+            iframe.contentDocument.head.appendChild(style);
+          </script>
         </div>
       </div>
     </div>
