@@ -31,19 +31,6 @@ try {
 }
 $disclosed = (array) $decoded->disclosed;
 
-function isMember($disclosed) {
-    $member_key = IRMATUBE_CREDENTIAL_ID . ".type";
-    foreach ($disclosed as $con) {
-        foreach ($con as $attr) {
-            if ($attr->id == $member_key) {
-                return $attr->rawvalue === "regular" || $attr->rawvalue === "premium";
-            }
-        }
-    }
-
-    return false;
-}
-
 function isAgeAllowed($disclosed) {
     $age_restriction = 18;
 
