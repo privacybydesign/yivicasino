@@ -1,6 +1,8 @@
 services:
   php:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     networks:
@@ -15,21 +17,16 @@ services:
     volumes:
     - ./data:/data
 
-      
   irma:
-    build: https://github.com/privacybydesign/irmago.git
+    image: ghcr.io/privacybydesign/irma:latest
     ports:
     - "8088:8088" 
-    command: server --no-tls --no-auth --jwt-privkey-file /data/demo-privkey.pem   # add --url http://your--network-ip:8088 if your irma mobile app cannot talk to your localhost
+    command: server --no-tls --no-auth --jwt-privkey-file /data/demo-privkey.pem --url http://192.168.1.154:8088  # add --url http://your--network-ip:8088 if your irma mobile app cannot talk to your localhost
     networks:
       - app-network
     volumes:
       - ./data:/data
-
-
     
 networks:
   app-network:
     driver: bridge
-
-
