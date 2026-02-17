@@ -9,7 +9,7 @@ RUN npm i
 # ---
 
 FROM composer:latest AS composer
-FROM dunglas/frankenphp:latest
+FROM dunglas/frankenphp:1.11.2
 
 ENV SERVER_NAME=:8080
 ENV DEBIAN_FRONTEND=noninteractive
@@ -29,4 +29,3 @@ RUN cd /app/public \
     && composer install --no-interaction --optimize-autoloader --no-dev
 
 EXPOSE 8080
-
