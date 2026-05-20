@@ -5,9 +5,9 @@
   "author": "Privacy by Design Foundation",
   "license": "Apache",
   "dependencies": {
-    "@privacybydesign/yivi-frontend": "^0.2.1",
+    "@privacybydesign/yivi-frontend": "^1.0.2",
     "bootstrap": "^5.0.0",
-    "jquery": "^3.5.0",
-    "mustache": "^2.3.0"
+    "jquery": "^4.0.0",
+    "mustache": "^4.2.0"
   }
 }
