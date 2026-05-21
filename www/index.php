@@ -26,7 +26,7 @@
 
   <script type="text/javascript">
     $(window).on('load', function() {
-      $('#enterModal').modal('show');
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('enterModal')).show();
     });
 
     function enterCasino() {
@@ -58,8 +58,8 @@
         .then((result) => {
           if (result.success) {
             // Users age is verified, proceed to play in the casino
-            $('#enterModal').modal('hide');
-            $('#slotMachineModal').modal('show');
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('enterModal')).hide();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('slotMachineModal')).show();
             playSlotMachine();
           } else {
             $('#enterModalLabel').text('Age Verification failed');
