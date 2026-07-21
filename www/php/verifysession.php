@@ -1,6 +1,7 @@
 <?php
 require_once '../vendor/autoload.php';
 require_once '../config.php';
+require_once __DIR__ . '/verification.php';
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\Key;
 
@@ -22,42 +23,26 @@ if (!isset($data['token']) || empty($data['token'])) {
 $jwt_pk = file_get_contents(IRMA_SERVER_PUBLICKEY);
 $token = $data['token'];
 
-JWT::$leeway = 60 * 60;
+// Allow only a small clock-skew tolerance between this server and the Yivi
+// server when validating the JWT's iat/exp claims.
+JWT::$leeway = 60;
 try {
     $decoded = JWT::decode($token, new Key($jwt_pk, 'RS256'));
 } catch (Exception $e) {
     header("HTTP/1.0 403 Forbidden");
     exit;
 }
-$disclosed = (array) $decoded->disclosed;
 
-function isAgeAllowed($disclosed) {
-    $age_restriction = 18;
-
-    $age_key_passport = "pbdf.pbdf.passport.over" . $age_restriction;
-    $age_key_idcard = "pbdf.pbdf.idcard.over" . $age_restriction;
-    $age_key_drivinglicence = "pbdf.pbdf.drivinglicence.over" . $age_restriction;
-    $age_key_nijmegen = "pbdf.nijmegen.ageLimits.over" . $age_restriction;
-    $age_key_gemeente = "pbdf.gemeente.personalData.over" . $age_restriction;
-    $age_key_demo_gemeente = "irma-demo.gemeente.personalData.over" . $age_restriction;
-
-    foreach ($disclosed as $con) {
-        foreach ($con as $attr) {
-            if ($attr->id == $age_key_passport
-                || $attr->id == $age_key_nijmegen
-                || $attr->id == $age_key_idcard
-                || $attr->id == $age_key_drivinglicence
-                || $attr->id == $age_key_gemeente
-                || $attr->id == $age_key_demo_gemeente
-            ) {
-                return strtolower($attr->rawvalue) == "yes" || strtolower($attr->rawvalue) == "ja";
-            }
-        }
-    }
-
-    return false;
+// A valid signature only proves the token came from our Yivi server, not that
+// the disclosure itself succeeded. Reject the result unless the server reported
+// a valid disclosure before trusting the disclosed attributes.
+if (!isDisclosureProofValid($decoded)) {
+    header("HTTP/1.0 403 Forbidden");
+    echo json_encode(['success' => false]);
+    exit;
 }
 
+$disclosed = (array) $decoded->disclosed;
 
 if (isAgeAllowed($disclosed)) {
     echo json_encode(['success' => true]);
