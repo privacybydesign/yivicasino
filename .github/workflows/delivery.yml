@@ -56,9 +56,11 @@ jobs:
         with:
           context: .
           load: true
+          # Never use a layer cache: the Dockerfile's `apt upgrade` must run on
+          # every build so the image (and the weekly scan) picks up security
+          # patches published since the previous build.
+          no-cache: true
           tags: local/yivicasino:scan
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Scan Image
         uses: anchore/scan-action@v7
