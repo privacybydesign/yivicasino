@@ -21,7 +21,6 @@
   <script src="vendor/bootstrap.min.js" type="text/javascript"></script>
 
   <script src="vendor/yivi.js" type="text/javascript" async></script>
-  <script src="js/slotmachine.js" type="text/javascript"></script>
 
   <script type="text/javascript">
     $(window).on('load', function() {
@@ -59,7 +58,6 @@
             // Users age is verified, proceed to play in the casino
             bootstrap.Modal.getOrCreateInstance(document.getElementById('enterModal')).hide();
             bootstrap.Modal.getOrCreateInstance(document.getElementById('slotMachineModal')).show();
-            playSlotMachine();
           } else {
             $('#enterModalLabel').text('Age Verification failed');
             $('#enterModal .modal-body').html('Could not verify your age. Please try again.');
