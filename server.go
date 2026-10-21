@@ -85,6 +85,7 @@ func (s *server) handleVerify(w http.ResponseWriter, r *http.Request) {
 
 	result, err := s.verifier.verify(token)
 	if err != nil {
+		slog.Warn("rejected result token", "error", err)
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
