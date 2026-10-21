@@ -1,4 +1,4 @@
-# yivicasino — repo notes
+# yivicasino: repo notes
 
 Go server with a static frontend (`www/`). It starts an over-18 disclosure
 session at an IRMA server and checks the signed result JWT. Port of the former
