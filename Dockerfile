@@ -1,31 +1,30 @@
-FROM node:18 AS node
-
+FROM node:24 AS assets
 WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+RUN npm run vendor
 
-COPY www/package*.json .
+# -----------------------------------------------------
 
-RUN npm i
+FROM golang:1.26.10 AS build
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY *.go ./
+COPY www www
+COPY --from=assets /build/www/vendor www/vendor
 
-# ---
+# compile with static linking
+RUN CGO_ENABLED=0 go build -o /casino .
 
-FROM composer:latest AS composer
-FROM dunglas/frankenphp:1.12.6-php8.5
+# -----------------------------------------------------
 
-ENV SERVER_NAME=:8080
-ENV DEBIAN_FRONTEND=noninteractive
+FROM gcr.io/distroless/static-debian12:nonroot AS runtime
+COPY --from=build /casino /casino
 
-# Enable PHP production settings
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-    && apt update && apt upgrade -y \
-    && install-php-extensions zip
-
-COPY ./data /app/data
-COPY ./www /app/public
-
-COPY --from=composer /usr/bin/composer /usr/local/bin/composer
-COPY --from=node /build/node_modules /app/public/node_modules
-
-RUN cd /app/public \
-    && composer install --no-interaction --optimize-autoloader --no-dev
+# Declared explicitly to satisfy static scanners; the :nonroot tag already
+# defaults to this same user (UID 65532).
+USER nonroot:nonroot
 
 EXPOSE 8080
+ENTRYPOINT [ "/casino" ]

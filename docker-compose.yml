@@ -1,5 +1,5 @@
 services:
-  php:
+  casino:
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,8 +11,7 @@ services:
       - irma
     environment:
       - IRMA_SERVER_URL=http://irma:8088
-      - ROOT_DIR=/app/data/
-      - IRMA_SERVER_PUBLICKEY=/app/data/demo-publickey.pem
+      - IRMA_SERVER_PUBLICKEY=/data/demo-publickey.pem
       # - IRMA_SERVER_API_TOKEN=mysecrettoken
     volumes:
     - ./data:/data
