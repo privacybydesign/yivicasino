@@ -18,6 +18,17 @@ import (
 const (
 	testAPIToken     = "secret-token"
 	irmaSessionReply = `{"token":"abc","sessionPtr":{"u":"https://irma.example/irma/session/xyz","irmaqr":"disclosing"}}`
+
+	startSessionTarget = "/api/session?type=verification"
+	verifyPath         = "/api/verifysession"
+	bodyAllowed        = `{"success":true}`
+	bodyDenied         = `{"success":false}`
+
+	// Spelled out instead of reusing the production constants, so a typo in
+	// those fails a test.
+	wireAuthorization     = "Authorization"
+	wireContentType       = "Content-Type"
+	wireDisclosureContext = "https://irma.app/ld/request/disclosure/v2"
 )
 
 type recordedRequest struct {
@@ -49,8 +60,8 @@ func newFakeIrma(t *testing.T) *fakeIrma {
 		f.requests = append(f.requests, recordedRequest{
 			method:        r.Method,
 			path:          r.URL.Path,
-			authorization: r.Header.Get("Authorization"),
-			contentType:   r.Header.Get("Content-Type"),
+			authorization: r.Header.Get(wireAuthorization),
+			contentType:   r.Header.Get(wireContentType),
 			body:          string(body),
 		})
 		w.WriteHeader(f.status)
@@ -97,7 +108,7 @@ func (a *testApp) do(method, target, body string) *httptest.ResponseRecorder {
 func (a *testApp) verify(token string) *httptest.ResponseRecorder {
 	body, _ := json.Marshal(map[string]string{"token": token})
 
-	return a.do(http.MethodPost, "/api/verifysession", string(body))
+	return a.do(http.MethodPost, verifyPath, string(body))
 }
 
 func TestSessionStartsAgeCheck(t *testing.T) {
@@ -135,7 +146,7 @@ func TestSessionStartsAgeCheck(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if request.Context != "https://irma.app/ld/request/disclosure/v2" {
+	if request.Context != wireDisclosureContext {
 		t.Errorf("@context = %q", request.Context)
 	}
 
@@ -183,13 +194,13 @@ func TestSessionUpstreamFailure(t *testing.T) {
 	app := newTestApp(t)
 	app.irma.status = http.StatusInternalServerError
 
-	if rec := app.do(http.MethodGet, "/api/session?type=verification", ""); rec.Code != http.StatusBadGateway {
+	if rec := app.do(http.MethodGet, startSessionTarget, ""); rec.Code != http.StatusBadGateway {
 		t.Errorf("status = %d, want 502 when the IRMA server fails", rec.Code)
 	}
 
 	app.irma.Close()
 
-	if rec := app.do(http.MethodGet, "/api/session?type=verification", ""); rec.Code != http.StatusBadGateway {
+	if rec := app.do(http.MethodGet, startSessionTarget, ""); rec.Code != http.StatusBadGateway {
 		t.Errorf("status = %d, want 502 when the IRMA server is unreachable", rec.Code)
 	}
 }
@@ -206,7 +217,7 @@ func TestVerifyAllowsOver18(t *testing.T) {
 				t.Fatalf("status = %d, want 200", rec.Code)
 			}
 
-			if got := strings.TrimSpace(rec.Body.String()); got != `{"success":true}` {
+			if got := strings.TrimSpace(rec.Body.String()); got != bodyAllowed {
 				t.Errorf("body = %q", got)
 			}
 		})
@@ -223,7 +234,7 @@ func TestVerifyDeniesUnder18(t *testing.T) {
 		t.Fatalf("status = %d, want 403", rec.Code)
 	}
 
-	if got := strings.TrimSpace(rec.Body.String()); got != `{"success":false}` {
+	if got := strings.TrimSpace(rec.Body.String()); got != bodyDenied {
 		t.Errorf("body = %q", got)
 	}
 }
@@ -241,7 +252,7 @@ func TestVerifyDeniesBadProof(t *testing.T) {
 				t.Fatalf("status = %d, want 403", rec.Code)
 			}
 
-			if got := strings.TrimSpace(rec.Body.String()); got != `{"success":false}` {
+			if got := strings.TrimSpace(rec.Body.String()); got != bodyDenied {
 				t.Errorf("body = %q", got)
 			}
 		})
@@ -306,7 +317,7 @@ func TestVerifyWithoutToken(t *testing.T) {
 
 	for name, body := range tests {
 		t.Run(name, func(t *testing.T) {
-			rec := newTestApp(t).do(http.MethodPost, "/api/verifysession", body)
+			rec := newTestApp(t).do(http.MethodPost, verifyPath, body)
 
 			if rec.Code != http.StatusBadRequest {
 				t.Errorf("status = %d, want 400", rec.Code)
@@ -316,7 +327,7 @@ func TestVerifyWithoutToken(t *testing.T) {
 }
 
 func TestVerifyRefusesGet(t *testing.T) {
-	rec := newTestApp(t).do(http.MethodGet, "/api/verifysession", "")
+	rec := newTestApp(t).do(http.MethodGet, verifyPath, "")
 
 	if rec.Code == http.StatusOK {
 		t.Errorf("status = %d, want GET to be refused", rec.Code)

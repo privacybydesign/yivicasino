@@ -125,6 +125,7 @@ func localReferences(html string) []string {
 
 	for _, attr := range []string{`src="`, `href="`} {
 		rest := html
+
 		for {
 			_, after, found := strings.Cut(rest, attr)
 			if !found {
