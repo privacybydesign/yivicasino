@@ -119,6 +119,21 @@ func TestRepoFilesNotServed(t *testing.T) {
 	}
 }
 
+func TestDirectoriesNotListed(t *testing.T) {
+	handler := newSiteHandler(t)
+
+	for _, p := range []string{"/css/", "/img/", "/js/"} {
+		t.Run(p, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+			handler.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, p, nil))
+
+			if rec.Code != http.StatusNotFound {
+				t.Errorf("GET %s = %d, want 404 instead of a file index", p, rec.Code)
+			}
+		})
+	}
+}
+
 // localReferences returns the relative src and href targets in html.
 func localReferences(html string) []string {
 	var refs []string

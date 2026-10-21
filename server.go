@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -34,9 +35,22 @@ func newHandler(irma *irmaClient, verifier *tokenVerifier, site fs.FS) http.Hand
 	mux.HandleFunc("GET /api/session", s.handleSession)
 	mux.HandleFunc("POST /api/session", s.handleSession)
 	mux.HandleFunc("POST /api/verifysession", s.handleVerify)
-	mux.Handle("/", http.FileServerFS(site))
+	mux.Handle("/", noDirectoryListing(http.FileServerFS(site)))
 
 	return mux
+}
+
+// noDirectoryListing answers 404 for a directory path, so the file server
+// never lists the files in a directory.
+func noDirectoryListing(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" && strings.HasSuffix(r.URL.Path, "/") {
+			http.NotFound(w, r)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // handleSession starts the over-18 disclosure session at the IRMA server and
