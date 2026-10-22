@@ -152,6 +152,9 @@ func TestVerifyRejectsBadTokens(t *testing.T) {
 	notYetValid := validClaims()
 	notYetValid["nbf"] = time.Now().Add(time.Hour).Unix()
 
+	withoutExpiry := validClaims()
+	delete(withoutExpiry, "exp")
+
 	tests := []struct {
 		name  string
 		token string
@@ -163,6 +166,7 @@ func TestVerifyRejectsBadTokens(t *testing.T) {
 		{"expired", signToken(t, jwt.SigningMethodRS256, key, expired)},
 		{"issued in the future", signToken(t, jwt.SigningMethodRS256, key, issuedInFuture)},
 		{"not valid yet", signToken(t, jwt.SigningMethodRS256, key, notYetValid)},
+		{"no expiry", signToken(t, jwt.SigningMethodRS256, key, withoutExpiry)},
 		{"not a JWT", "not-a-jwt"},
 		{"empty", ""},
 	}

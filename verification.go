@@ -57,6 +57,7 @@ func newTokenVerifier(pemKey []byte) (*tokenVerifier, error) {
 	parser := jwt.NewParser(
 		jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Alg()}),
 		jwt.WithLeeway(jwtLeeway),
+		jwt.WithExpirationRequired(),
 		jwt.WithIssuedAt(),
 	)
 
