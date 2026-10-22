@@ -1,1 +1,5 @@
 /build
+node_modules/
+www/vendor/
+/yivicasino
+coverage.out
