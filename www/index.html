@@ -44,25 +44,26 @@
         .then((response) => {
           if (response.status === 403) {
             $('#enterModalLabel').text('Age Verification failed');
-            $('#enterModal .modal-body').html('<p><img src="img/under-18-sign.jpg" /><br/><br/>We could not verify your age is over 18. Therefor, you are not allowed to play on our slotmachine.</p>');
+            $('#enterModal .modal-body').html('<p><img src="img/under-18-sign.jpg" /><br/><br/>We could not verify your age is over 18. Therefore, you are not allowed to play on our slot machine.</p>');
             $('#enterModal .modal-footer').hide();
             return;
           }
           if (!response.ok) {
             throw new Error("HTTP error, status = " + response.status);
           }
-          return response.json();
-        })
-        .then((result) => {
-          if (result.success) {
+          return response.json().then((result) => {
+            if (!result.success) {
+              throw new Error("verification did not succeed");
+            }
             // Users age is verified, proceed to play in the casino
             bootstrap.Modal.getOrCreateInstance(document.getElementById('enterModal')).hide();
             bootstrap.Modal.getOrCreateInstance(document.getElementById('slotMachineModal')).show();
-          } else {
-            $('#enterModalLabel').text('Age Verification failed');
-            $('#enterModal .modal-body').html('Could not verify your age. Please try again.');
-          }
+          });
         })
+        .catch((err) => {
+          console.error("Age verification failed:", err);
+          showMessage('Could not verify your age. Please try again.');
+        });
       };
 
       let url = "api/session?type=verification&" + Math.random(); // Append randomness so that IE doesn't consider it 304 not modified
@@ -83,11 +84,18 @@
       .then(onVerifySuccess, onIrmaFailure);
     }
 
+    // showMessage replaces the text in the enter dialog; the enter button
+    // stays, so the user can try again.
+    function showMessage(msg) {
+      $('#enterModal .modal-body').text(msg);
+    }
+
     function onIrmaFailure(data) {
-      if(data === 'Aborted')
-        showWarning(data);
+      console.log("Yivi session failed:", data);
+      if (data === 'Aborted')
+        showMessage('You closed the Yivi popup. Click the button below to try again.');
       else
-        showError(data);
+        showMessage('Something went wrong with Yivi (' + data + '). Click the button below to try again.');
     }
   </script>
 </head>
@@ -121,18 +129,6 @@
         <div id="slotmachine-wrapper" class="modal-body" style="text-align: center;">
           <iframe id="myIframe" src="https://danziger.github.io/slotjs/" frameborder="0" height="100%" width="100%">
           </iframe>
-          <script type="text/javascript">
-            const iframe = document.getElementById('myIframe');
-            const css = `
-            #instructionsModal {
-              display: none;
-            }`;
-
-            const style = document.createElement('style');
-            style.textContent = css;
-
-            iframe.contentDocument.head.appendChild(style);
-          </script>
         </div>
       </div>
     </div>
