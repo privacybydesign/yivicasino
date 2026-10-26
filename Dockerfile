@@ -1,4 +1,4 @@
-FROM node:24 AS assets
+FROM node:25 AS assets
 WORKDIR /build
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
@@ -6,7 +6,7 @@ RUN npm run vendor
 
 # -----------------------------------------------------
 
-FROM golang:1.26.10 AS build
+FROM golang:1.27.2 AS build
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
