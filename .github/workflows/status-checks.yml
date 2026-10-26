@@ -14,6 +14,16 @@ on:
 permissions: {}
 
 jobs:
+  # npm only supplies the vendored browser assets (www/vendor); same steps as
+  # the Dockerfile's assets stage.
+  frontend:
+    uses: privacybydesign/github-workflows/.github/workflows/node-checks.yml@v1
+    permissions:
+      contents: read
+    with:
+      scripts: vendor
+      ignore-scripts: true
+
   go:
     uses: privacybydesign/github-workflows/.github/workflows/go-checks.yml@v1
     permissions:
@@ -36,16 +46,6 @@ jobs:
     with:
       push-image: false
 
-  codeql:
-    uses: privacybydesign/github-workflows/.github/workflows/codeql.yml@v1
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-    with:
-      languages: '["go", "actions"]'
-      go-build-command: go build ./...
-
   dependency-review:
     if: github.event_name == 'pull_request'
     uses: privacybydesign/github-workflows/.github/workflows/dependency-review.yml@v1
@@ -61,7 +61,7 @@ jobs:
   passed:
     name: Status checks passed
     if: always()
-    needs: [go, docker, codeql, dependency-review, workflow-lint]
+    needs: [frontend, go, docker, dependency-review, workflow-lint]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}

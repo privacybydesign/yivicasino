@@ -1,5 +1,5 @@
 # Delivery: builds, scans and pushes ghcr.io/privacybydesign/yivicasino.
-# Push to the default branch -> :edge, release -> :x.y.z. PR builds are scanned
+# Push to main -> :edge, release -> :x.y.z and :latest. PR builds are scanned
 # in Status checks; published images are re-scanned weekly by image-rescan.yml.
 name: Delivery
 
@@ -21,3 +21,6 @@ jobs:
       security-events: write
       id-token: write
       attestations: write
+    with:
+      # The old Delivery tagged :latest on every stable release; keep doing so.
+      tag-latest: true
