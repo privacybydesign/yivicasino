@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@privacybydesign/yivi-frontend": "^1.0.2",
-    "bootstrap": "^5.0.0",
+    "bootstrap": "^5.3.9",
     "jquery": "^4.0.0",
     "mustache": "^4.2.0"
   }
